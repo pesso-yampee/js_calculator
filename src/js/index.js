@@ -16,7 +16,8 @@ const container           = document.getElementById('jsi-container'),
       otherItemIds        = ['jsi-clear', 'jsi-changeSign', 'jsi-changePercentage'],
       numbersItemTexts    = ['.', 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
       operationsItemTexts = ['÷', '×', '-', '+', '='],
-      operationsItemIds   = ['jsi-divide', 'jsi-multiply', 'jsi-minus', 'jsi-plus', 'jsi-equal'];
+      operationsItemIds   = ['jsi-divide', 'jsi-multiply', 'jsi-minus', 'jsi-plus', 'jsi-equal'],
+      limitDigitNumber    = 12;
 
 let otherItemArray      = [],
     numbersItemArray    = [],
@@ -41,6 +42,11 @@ function ArrayPushCreateElement(texts, className, ids, array) {
     li.textContent = texts[i];
     array.push(li);
   }
+}
+
+// ボタン「C」を押した時の処理
+function resetCalculation(number, operation) {
+  // 最終的に何かを返すのか or 返さないのか
 }
 
 container.classList = 'container';
@@ -98,6 +104,7 @@ container.append(inner);
 // 親ノードnumbersの子ノードを読み取り、変数numbersChildrenに代入
 const numbersChildren = numbers.childNodes;
 
+// できればfor文は早めに抜けたいところ...。
 for (let i = 0; i < numbersChildren.length; i++) {
   // 変数numbersChildrenのi番目の要素を取得
   const number = numbersChildren.item(i);
@@ -117,12 +124,12 @@ for (let i = 0; i < numbersChildren.length; i++) {
       const removedComma = result.textContent.replace(/,/g, '');
 
       result.textContent = removedComma.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      
     }
     // もし12桁(カンマ含む)を越えそうなら、クリックできないようにする。
-    else if (result.textContent.length > 12) {
-      stopClickAction(e);
+    if (result.textContent.length >= limitDigitNumber) {
+      e.stopPropagation();
     }
-
     // もし文字列の長さがcontainerの長さを超えそうなら、枠内に収まるようにフォントサイズを小さくする。
     if (result.clientWidth > container.clientWidth) {
       result.style.fontSize = '50px';
