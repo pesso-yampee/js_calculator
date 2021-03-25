@@ -77,10 +77,9 @@ function addNumber(target) {
 }
 
 // ボタン「C」を押した時の処理
-// function resetCalculation(number, operation = null) {
-//   // 最終的に何かを返すのか or 返さないのか
-//   return number.textContent = 0;
-// }
+function resetCalculation(number, operation = null) {
+  return number.textContent = 0;
+}
 
 // function changeSign(number) {
 //   let result = Number(number.textContent);
@@ -127,14 +126,6 @@ mainBody.append(other, numbers);
 inner.append(result, mainBody, operations);
 container.append(inner);
 
-
-/*
-  ■ 機能追加
-  ①押したボタンの数字を反映させる
-  ②1回目に押したボタンの数字を一の位として認識させ、2回目以降に押したボタンの数字を十の位、百の位と認識させる
-  ③11桁を超えるとクリックイベントを中断する(カンマ含む)
-*/
-
 for (let i = 0; i < numbersChildren.length; i++) {
   const number = numbersChildren.item(i);
 
@@ -143,9 +134,9 @@ for (let i = 0; i < numbersChildren.length; i++) {
   });
 }
 
-// document.getElementById('jsi-clear').addEventListener('click', () => {
-//   resetCalculation(result);
-// });
+document.getElementById('jsi-clear').addEventListener('click', () => {
+  resetCalculation(result);
+});
 
 // document.getElementById('jsi-changeSign').addEventListener('click', () => {
 //   changeSign(result);
