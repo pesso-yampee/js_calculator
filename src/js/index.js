@@ -1,7 +1,7 @@
 'use strict';
 
 const container           = document.getElementById('jsi-container'),
-      result              = document.createElement('p'),
+      value               = document.createElement('p'),
       mainBody            = document.createElement('div'),
       inner               = document.createElement('div'),
       other               = document.createElement('ul'),
@@ -9,7 +9,7 @@ const container           = document.getElementById('jsi-container'),
       operations          = document.createElement('ul'),
       otherItemTexts      = ['C', '+/-', '%'],
       otherItemIds        = ['jsi-clear', 'jsi-changeSign', 'jsi-changePercentage'],
-      numbersItemTexts    = ['.', 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      numbersItemTexts    = ['.'],
       operationsItemTexts = ['÷', '×', '-', '+', '='],
       operationsItemIds   = ['jsi-divide', 'jsi-multiply', 'jsi-minus', 'jsi-plus', 'jsi-equal'],
       numbersChildren     = numbers.childNodes;
@@ -18,27 +18,32 @@ let otherItemArray      = [],
     numbersItemArray    = [],
     operationsItemArray = [];
 
-container.classList  = 'container';
-result.classList     = 'result';
-mainBody.classList   = 'main-body';
-inner.classList      = 'inner';
-other.classList      = 'other';
-numbers.classList    = 'numbers';
-operations.classList = 'operations';
+for (let i = 0; i < 10; i++) {
+  numbersItemTexts.push[i];
+}
 
-result.textContent = 0;
+container.className  = 'container';
+value.className      = 'value';
+mainBody.className   = 'main-body';
+inner.className      = 'inner';
+other.className      = 'other';
+numbers.className    = 'numbers';
+operations.className = 'operations';
+
+value.id = 'jsi-value';
+value.textContent = 0;
 
 function stopClickAction(e) {
   e.preventDefault();
 }
 
-function ArrayAppendItem(arr, target) {
+function AppendItemToArray(arr, target) {
   return arr.forEach(element => {
     target.append(element);
   });
 }
 
-function ArrayPushCreateElement(texts, className, ids, array) {
+function addCreateElementToArray(texts, className, ids, array) {
   for (let i = 0; i < texts.length; i++) {
     const li = document.createElement('li');
 
@@ -47,52 +52,80 @@ function ArrayPushCreateElement(texts, className, ids, array) {
     li.textContent = texts[i];
     array.push(li);
   }
+
+  return array;
 }
 
-function addNumber(target) {
+function addNumber(target, number) {
   const clickedNumber = target.textContent,
         limitedLength = 11;
 
-  if (result.textContent.length < limitedLength) {
-    if (result.textContent === '0') {
-      result.textContent = clickedNumber;
+  if (number.textContent.length < limitedLength) {
+    if (number.textContent === '0') {
+      number.textContent = clickedNumber;
+    } else if (number.textContent === '-0') {
+      number.textContent = `-${clickedNumber}`;
     } else {
       // 正規表現を使ってカンマ区切りの数値を実現
-      result.textContent = (result.textContent + clickedNumber).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      number.textContent = (number.textContent + clickedNumber).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
     // このままだとカンマ区切りされた文字列に文字列を足していくことになるから、結果的にカンマが何個も増えることになる。
-    // もし文字列の長さが6以上(カンマ含めむ)なら、入力したタイミングでカンマを外して通常の文字列に直す。
-    if (result.textContent.length >= 6) {
-      const removedComma = result.textContent.replace(/,/g, '');
-  
-      result.textContent = removedComma.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    if (number.textContent.length >= 6) {
+      const removedComma = number.textContent.replace(/,/g, '');
+
+      number.textContent = removedComma.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
-  
-    if (result.clientWidth > container.clientWidth) {
-      result.style.fontSize = '55px';
-    }
+
+    changeFontSizeToSmall(number, 'is-active');
+
+    return number;
+
   } else {
     return false;
   }
 }
 
 // ボタン「C」を押した時の処理
-function resetCalculation(number, operation = null) {
-  return number.textContent = 0;
+function clearCalculation(target, operation = null) {
+  target.classList.remove('is-active');
+  return target.textContent = 0;
 }
 
-// function changeSign(number) {
-//   let result = Number(number.textContent);
+// ボタン「+/-」を押した時の処理
+function changeSign(target) {
+  const removedCommaNumber = target.textContent.replace(/,/g, ''),
+        limitedLength      = 11;
+  let changedSignNumber;
 
-//   if (result > 0) {
-//     result = `-${result}`;
-//   } else {
-//     result = Math.abs(result);
-//   }
-//   return result;
-// }
+  if (removedCommaNumber.split('').indexOf('-') === -1) {
+    changedSignNumber = `-${removedCommaNumber}`;
+  } else {
+    const removedCommaNumberArray = removedCommaNumber.split('');
 
-ArrayPushCreateElement(otherItemTexts, 'button button--other', otherItemIds, otherItemArray);
+    removedCommaNumberArray.splice(0, 1);
+    changedSignNumber = removedCommaNumberArray.join('');
+  }
+  
+  target.textContent = changedSignNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  // MEMO: フォントサイズの設定はJS側でやりたくないところ。別案があればそちらで対応
+  if (target.textContent.length > limitedLength) {
+    target.style.fontSize = '50px';
+  }else {
+    target.style.fontSize = '55px';
+  }
+
+  return target;
+}
+
+function changeFontSizeToSmall(outcome, className) {
+  if (outcome.clientWidth > container.clientWidth) {
+    return outcome.classList.add(className);
+  }
+}
+
+addCreateElementToArray(otherItemTexts, 'button button--other', otherItemIds, otherItemArray);
+addCreateElementToArray(operationsItemTexts, 'button button--operation', operationsItemIds, operationsItemArray);
 
 for (let i = 0; i < 11; i++) {
   const numbersItem = document.createElement('li');
@@ -116,28 +149,27 @@ for (let i = 0; i < 11; i++) {
   numbersItemArray.push(numbersItem);
 }
 
-ArrayPushCreateElement(operationsItemTexts, 'button button--operation', operationsItemIds, operationsItemArray);
 
-ArrayAppendItem(otherItemArray, other);
-ArrayAppendItem(numbersItemArray, numbers);
-ArrayAppendItem(operationsItemArray, operations);
+AppendItemToArray(otherItemArray, other);
+AppendItemToArray(numbersItemArray, numbers);
+AppendItemToArray(operationsItemArray, operations);
 
 mainBody.append(other, numbers);
-inner.append(result, mainBody, operations);
+inner.append(value, mainBody, operations);
 container.append(inner);
 
-for (let i = 0; i < numbersChildren.length; i++) {
+for (let i = 2; i < numbersChildren.length; i++) {
   const number = numbersChildren.item(i);
 
   number.addEventListener('click', function() {
-    addNumber(this);
+    addNumber(this, value);
   });
 }
 
 document.getElementById('jsi-clear').addEventListener('click', () => {
-  resetCalculation(result);
+  clearCalculation(value);
 });
 
-// document.getElementById('jsi-changeSign').addEventListener('click', () => {
-//   changeSign(result);
-// });
+document.getElementById('jsi-changeSign').addEventListener('click', () => {
+  changeSign(value);
+});
