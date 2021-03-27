@@ -57,18 +57,23 @@ function addCreateElementToArray(texts, className, ids, array) {
 }
 
 function addNumber(target, number) {
-  const clickedNumber = target.textContent,
-        limitedLength = 11;
+  const clickedNumber = target.textContent;
+  let limitedLength = 0;
 
-  if (number.textContent.length < limitedLength) {
+  if (number.textContent.split('').indexOf('-') === -1) {
+    limitedLength = 11;
+  } else {
+    limitedLength = 12;
+  }
+
+  if (number.textContent.length < limitedLength && limitedLength === 11) {
     if (number.textContent === '0') {
       number.textContent = clickedNumber;
-    } else if (number.textContent === '-0') {
-      number.textContent = `-${clickedNumber}`;
     } else {
       // 正規表現を使ってカンマ区切りの数値を実現
       number.textContent = (number.textContent + clickedNumber).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
+    
     // このままだとカンマ区切りされた文字列に文字列を足していくことになるから、結果的にカンマが何個も増えることになる。
     if (number.textContent.length >= 6) {
       const removedComma = number.textContent.replace(/,/g, '');
@@ -80,9 +85,34 @@ function addNumber(target, number) {
 
     return number;
 
+  } else if (number.textContent.length < limitedLength && limitedLength === 12) {
+    if (number.textContent === '-0') {
+      number.textContent = `-${clickedNumber}`;
+    } else {
+      // 正規表現を使ってカンマ区切りの数値を実現
+      number.textContent = (number.textContent + clickedNumber).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    // このままだとカンマ区切りされた文字列に文字列を足していくことになるから、結果的にカンマが何個も増えることになる。
+    if (number.textContent.length >= 7) {
+      const removedComma = number.textContent.replace(/,/g, '');
+
+      number.textContent = removedComma.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    changeFontSizeToSmall(number, 'is-active');
+
+    if (number.textContent.length >= limitedLength) {
+      number.style.fontSize = '50px';
+    }
+
+    return number;
+
   } else {
     return false;
   }
+
+  
 }
 
 // ボタン「C」を押した時の処理
