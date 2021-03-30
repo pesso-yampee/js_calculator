@@ -16,7 +16,8 @@ const container           = document.getElementById('jsi-container'),
 
 let otherItemArray      = [],
     numbersItemArray    = [],
-    operationsItemArray = [];
+    operationsItemArray = [],
+    count               = 0;
 
 for (let i = 0; i < 10; i++) {
   numbersItemTexts.push[i];
@@ -33,9 +34,9 @@ operations.className = 'operations';
 value.id = 'jsi-value';
 value.textContent = 0;
 
-function stopClickAction(e) {
-  e.preventDefault();
-}
+// function stopClickAction(e) {
+//   e.preventDefault();
+// }
 
 function AppendItemToArray(arr, target) {
   return arr.forEach(element => {
@@ -57,7 +58,8 @@ function addCreateElementToArray(texts, className, ids, array) {
 }
 
 function addNumber(target, number) {
-  const clickedNumber = target.textContent;
+  const clickedNumber       = target.textContent,
+        originalNumberWidth = number.clientWidth;
   let limitedLength = 0;
 
   if (number.textContent.split('').indexOf('-') === -1) {
@@ -65,15 +67,15 @@ function addNumber(target, number) {
   } else {
     limitedLength = 12;
   }
-
-  if (number.textContent.length < limitedLength && limitedLength === 11) {
+  
+  if (limitedLength === 11 && number.textContent.length < limitedLength) {
     if (number.textContent === '0') {
       number.textContent = clickedNumber;
     } else {
       // 正規表現を使ってカンマ区切りの数値を実現
       number.textContent = (number.textContent + clickedNumber).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
-    
+
     // このままだとカンマ区切りされた文字列に文字列を足していくことになるから、結果的にカンマが何個も増えることになる。
     if (number.textContent.length >= 6) {
       const removedComma = number.textContent.replace(/,/g, '');
@@ -81,11 +83,11 @@ function addNumber(target, number) {
       number.textContent = removedComma.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
 
-    changeFontSizeToSmall(number, 'is-active');
+    changeFontSizeToSmall(number, originalNumberWidth);
 
     return number;
 
-  } else if (number.textContent.length < limitedLength && limitedLength === 12) {
+  } else if (limitedLength === 12 && number.textContent.length < limitedLength) {
     if (number.textContent === '-0') {
       number.textContent = `-${clickedNumber}`;
     } else {
@@ -94,63 +96,63 @@ function addNumber(target, number) {
     }
 
     // このままだとカンマ区切りされた文字列に文字列を足していくことになるから、結果的にカンマが何個も増えることになる。
-    if (number.textContent.length >= 7) {
+    if (number.textContent.length >= 6) {
       const removedComma = number.textContent.replace(/,/g, '');
 
       number.textContent = removedComma.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
 
-    changeFontSizeToSmall(number, 'is-active');
-
-    if (number.textContent.length >= limitedLength) {
-      number.style.fontSize = '50px';
-    }
+    changeFontSizeToSmall(number, originalNumberWidth);
 
     return number;
-
   } else {
     return false;
   }
-
-  
 }
 
 // ボタン「C」を押した時の処理
 function clearCalculation(target, operation = null) {
-  target.classList.remove('is-active');
+  count = 0;
+  target.classList.remove('is-small', 'is-xSmall');
   return target.textContent = 0;
 }
 
 // ボタン「+/-」を押した時の処理
 function changeSign(target) {
-  const removedCommaNumber = target.textContent.replace(/,/g, ''),
-        limitedLength      = 11;
+  const removedCommaNumber  = target.textContent.replace(/,/g, ''),
+        originalNumberWidth = target.clientWidth;
   let changedSignNumber;
 
   if (removedCommaNumber.split('').indexOf('-') === -1) {
-    changedSignNumber = `-${removedCommaNumber}`;
+    const removedCommaNumberArray = removedCommaNumber.split('');
+
+    removedCommaNumberArray.unshift('-');
+    changedSignNumber = removedCommaNumberArray.join('');
   } else {
     const removedCommaNumberArray = removedCommaNumber.split('');
 
     removedCommaNumberArray.splice(0, 1);
     changedSignNumber = removedCommaNumberArray.join('');
   }
-  
+
   target.textContent = changedSignNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-  // MEMO: フォントサイズの設定はJS側でやりたくないところ。別案があればそちらで対応
-  if (target.textContent.length > limitedLength) {
-    target.style.fontSize = '50px';
-  }else {
-    target.style.fontSize = '55px';
-  }
+  changeFontSizeToSmall(target, originalNumberWidth);
 
   return target;
 }
 
-function changeFontSizeToSmall(outcome, className) {
-  if (outcome.clientWidth > container.clientWidth) {
-    return outcome.classList.add(className);
+function changeFontSizeToSmall(outcome, width) {
+  if (count === 0) {
+    if (outcome.clientWidth > width) {
+      count += 1;
+      return outcome.classList.add('is-small');
+    }
+  } else {
+    if (outcome.clientWidth > width) {
+      console.log(true);
+      return outcome.classList.add('is-xSmall');
+    }
   }
 }
 

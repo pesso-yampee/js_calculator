@@ -194,8 +194,12 @@ textarea {
   font-size: 80px;
 }
 
-.value.is-active {
+.value.is-small {
   font-size: 55px;
+}
+
+.value.is-xSmall {
+  font-size: 50px;
 }
 
 .main-body {
