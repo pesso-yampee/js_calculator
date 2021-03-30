@@ -208,8 +208,12 @@ $colorPurple: #1F1B22;
   text-align: right;
   font-size: 80px;
 
-  &.is-active {
+  &.is-small {
     font-size: 55px;
+  }
+
+  &.is-xSmall {
+    font-size: 50px;
   }
 }
 
