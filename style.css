@@ -14,7 +14,7 @@
 */
 html {
   color: #000;
-  background: #FFF;
+  background: #fff;
 }
 
 /*
@@ -101,7 +101,7 @@ h6 {
 
 q:before,
 q:after {
-  content: '';
+  content: "";
 }
 
 abbr,
@@ -148,7 +148,9 @@ ul {
   list-style-type: none;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   border: none;
   border-radius: 0;
   box-sizing: border-box;
@@ -191,14 +193,26 @@ textarea {
   background-color: transparent;
   color: #fff;
   text-align: right;
-  font-size: 80px;
+  font-size: 85px;
 }
 
-.value.is-small {
+.font70 {
+  font-size: 70px;
+}
+
+.font65 {
+  font-size: 65px;
+}
+
+.font60 {
+  font-size: 60px;
+}
+
+.font55 {
   font-size: 55px;
 }
 
-.value.is-xSmall {
+.font50 {
   font-size: 50px;
 }
 
@@ -238,7 +252,7 @@ textarea {
 }
 
 .button--other {
-  background-color: #A6A6A6;
+  background-color: #a6a6a6;
 }
 
 .button--other:not(:last-child) {
@@ -251,7 +265,7 @@ textarea {
 }
 
 .button--operation {
-  background-color: #FE9500;
+  background-color: #fe9500;
 }
 
 .button--operation:not(:last-child) {
@@ -275,7 +289,7 @@ textarea {
   margin-bottom: 0;
 }
 
-.numbers > li:nth-child(n+3) {
+.numbers > li:nth-child(n + 3) {
   margin-right: 10px;
 }
 
