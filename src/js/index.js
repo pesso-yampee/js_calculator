@@ -1,34 +1,35 @@
 'use strict';
 
-const container = document.getElementById('jsi-container'),
-  value = document.createElement('p'),
-  mainBody = document.createElement('div'),
-  inner = document.createElement('div'),
-  other = document.createElement('ul'),
-  numbers = document.createElement('ul'),
-  operations = document.createElement('ul'),
-  otherItemTexts = ['C', '+/-', '%'],
-  otherItemIds = ['jsi-clear', 'jsi-changeSign', 'jsi-changePercentage'],
-  numbersItemTexts = ['.'],
-  operationsItemTexts = ['÷', '×', '-', '+', '='],
-  operationsItemIds = ['jsi-divide', 'jsi-multiply', 'jsi-minus', 'jsi-plus', 'jsi-equal'],
-  numbersChildren = numbers.childNodes;
+const container           = document.getElementById('jsi-container'),
+      value               = document.createElement('p'),
+      mainBody            = document.createElement('div'),
+      inner               = document.createElement('div'),
+      other               = document.createElement('ul'),
+      numbers             = document.createElement('ul'),
+      operations          = document.createElement('ul'),
+      otherItemTexts      = ['C', '+/-', '%'],
+      otherItemIds        = ['jsi-clear', 'jsi-changeSign', 'jsi-changePercentage'],
+      numbersItemTexts    = ['.'],
+      operationsItemTexts = ['÷', '×', '-', '+', '='],
+      operationsItemIds   = ['jsi-divide', 'jsi-multiply', 'jsi-minus', 'jsi-plus', 'jsi-equal'],
+      numbersChildren     = document.getElementsByClassName('button--number');
 
-let otherItemArray = [],
-  numbersItemArray = [],
-  operationsItemArray = [],
-  count = 0;
+
+let otherItemArray      = [],
+    numbersItemArray    = [],
+    operationsItemArray = [],
+    count = 0;
 
 for (let i = 0; i < 10; i++) {
   numbersItemTexts.push[i];
 }
 
-container.className = 'container';
-value.className = 'value';
-mainBody.className = 'main-body';
-inner.className = 'inner';
-other.className = 'other';
-numbers.className = 'numbers';
+container.className  = 'container';
+value.className      = 'value';
+mainBody.className   = 'main-body';
+inner.className      = 'inner';
+other.className      = 'other';
+numbers.className    = 'numbers';
 operations.className = 'operations';
 
 value.id = 'jsi-value';
@@ -58,8 +59,8 @@ function addCreateElementToArray(texts, className, ids, array) {
 }
 
 function addNumber(target, number) {
-  const clickedNumber = target.textContent,
-    originalNumberWidth = number.clientWidth;
+  const clickedNumber       = target.textContent,
+        originalNumberWidth = number.clientWidth;
   let limitedLength = 0;
 
   if (number.textContent.split('').indexOf('−') === -1) {
@@ -91,11 +92,9 @@ function addNumber(target, number) {
     if (number.textContent === '−0') {
       number.textContent = `−${clickedNumber}`;
     } else {
-      // 正規表現を使ってカンマ区切りの数値を実現
       number.textContent = (number.textContent + clickedNumber).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
 
-    // このままだとカンマ区切りされた文字列に文字列を足していくことになるから、結果的にカンマが何個も増えることになる。
     if (number.textContent.length >= 6) {
       const removedComma = number.textContent.replace(/,/g, '');
 
@@ -119,8 +118,8 @@ function clearCalculation(target, operation = null) {
 
 // ボタン「+/-」を押した時の処理
 function changeSign(target) {
-  const removedCommaNumber = target.textContent.replace(/,/g, ''),
-    originalNumberWidth = target.clientWidth;
+  const removedCommaNumber  = target.textContent.replace(/,/g, ''),
+        originalNumberWidth = target.clientWidth;
   let changedSignNumber;
 
   if (removedCommaNumber.split('').indexOf('−') === -1) {
@@ -153,15 +152,45 @@ function changeFontSizeToSmall(outcome, width) {
   } else if (outcome.textContent.length > 8) {
     return outcome.classList.add('font65');
   } else if (outcome.textContent.length > 7) {
-    return outcome.classList.add('font65');
+    return outcome.classList.add('font70');
   }
 }
 
-// function divideOneHundred(target) {
-//   const removeCommaNumber = Number(target.textContent.replace(/,/g, ''));
-//   const result = removeCommaNumber / 100;
-//   return result;
-// }
+function divideOneHundred(target) {
+  const removedCommaNumber = Number(target.textContent.replace(/,/g, ''));
+  const originalNumberWidth = target.clientWidth;
+  let splited = [];
+  let replaced = "";
+
+  if (target.textContent.indexOf('−') !== -1) {
+    const removedCommaNumberArray = target.textContent.replace(/,/g, '').split('');
+
+    removedCommaNumberArray.splice(0, 1);
+    
+    const changedSignNumber = Number(removedCommaNumberArray.join(''));
+    const dividedNumber = changedSignNumber / 100;
+
+    splited = String(dividedNumber).split('.');
+    const arr = splited[0].split('');
+    replaced = arr.join('').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  } else {
+    const dividedNumber = removedCommaNumber / 100;
+
+    splited = String(dividedNumber).split('.');
+    replaced = splited[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  }
+
+  if (splited.length > 1) {
+    replaced += '.' + splited[1];
+    console.log(replaced);
+  }
+
+  target.textContent = replaced;
+  changeFontSizeToSmall(target, originalNumberWidth);
+
+  return target;
+}
 
 addCreateElementToArray(otherItemTexts, 'button button--other', otherItemIds, otherItemArray);
 addCreateElementToArray(operationsItemTexts, 'button button--operation', operationsItemIds, operationsItemArray);
@@ -197,8 +226,8 @@ mainBody.append(other, numbers);
 inner.append(value, mainBody, operations);
 container.append(inner);
 
-for (let i = 2; i < numbersChildren.length; i++) {
-  const number = numbersChildren.item(i);
+for (let i = 0; i < numbersChildren.length; i++) {
+  const number = numbersChildren[i];
 
   number.addEventListener('click', function () {
     addNumber(this, value);
@@ -213,6 +242,6 @@ document.getElementById('jsi-changeSign').addEventListener('click', () => {
   changeSign(value);
 });
 
-// document.getElementById('jsi-changePercentage').addEventListener('click', () => {
-//   divideOneHundred(value);
-// });
+document.getElementById('jsi-changePercentage').addEventListener('click', () => {
+  divideOneHundred(value);
+});
